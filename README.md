@@ -1,4 +1,6 @@
-## 5fish/SVT-AV1
+## 5fish/SVT-AV1 (5fish/SVT-AV1-DAS fork)
+
+This is a personal fork which aims to fix regressions introduced in the latest (at the time version 260829) version of the 5fish/SVT-AV1 encoder by reverting cost based early exit via --psy-bias-mds0-sad, which did made the fine detail retention worse in comparison to 260629 and 260818 versions for mine use case. Skips were never good for quality, I'm also looking at you, rskip in x265.
 
 **5fish/SVT-AV1** is a fork developed for both high efficiency and high fidelity AV1 encoding, and incorporates various tweaks, improvements, and features, alongside a set of easy-to-use parameters tailored specifically for 2D content such as anime and games.  
 
