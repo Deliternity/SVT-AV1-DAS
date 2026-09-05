@@ -264,7 +264,6 @@ However, apart from this, both parameters have various features such as boosting
 
 #### `--high-quality-encode-psy-bias` Features
 
-* `--hierarchical-levels`: Default changed from `5` to `4`. Can be overridden.  
 * `delta_q_res`: Changed `--balancing-q-bias 1`'s default from `4` to `1`.  
 * `bypass_md_stage_2`: Disabled in `--preset 2` and `1`.  
 * variance cand elimination (`--texture-psy-bias [>= 3]`): Change it from applying only in frames of higher temporals layers to applying to frames of all temporal levels including base frames.  
