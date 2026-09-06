@@ -1275,8 +1275,8 @@ EbErrorType svt_av1_verify_settings(SequenceControlSet *scs) {
         SVT_ERROR("Instance %u: texture-psy-bias-optimize-b must be -2, between 0 and 2, or 4\n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     }
-    if (config->psy_bias_dg > 1 && config->psy_bias_dg != UINT8_DEFAULT) {
-        SVT_ERROR("Instance %u: psy-bias-dg must be between 0 and 1\n", channel_number + 1);
+    if (config->psy_bias_dg != 1 && config->psy_bias_dg != 0 && config->psy_bias_dg != -2 && config->psy_bias_dg != INT8_DEFAULT) {
+        SVT_ERROR("Instance %u: psy-bias-dg must be -2, 0 or 1\n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     }
 
@@ -1556,7 +1556,7 @@ EbErrorType svt_av1_set_default_params(EbSvtAv1EncConfiguration *config_ptr) {
     config_ptr->psy_bias_sharpness_rounding       = DEFAULT;
     config_ptr->psy_bias_optimize_b               = INT8_DEFAULT;
     config_ptr->texture_psy_bias_optimize_b       = INT8_DEFAULT;
-	config_ptr->psy_bias_dg                       = UINT8_DEFAULT;
+    config_ptr->psy_bias_dg                       = INT8_DEFAULT;
     config_ptr->high_quality_encode_psy_bias      = DEFAULT;
     config_ptr->high_fidelity_encode_psy_bias     = DEFAULT;
     config_ptr->dlf_bias                          = 0;
@@ -1701,6 +1701,34 @@ void svt_av1_print_lib_params(SequenceControlSet *scs) {
                             : config->intra_refresh_type == SVT_AV1_KF_REFRESH ? "closed GOP"
                                                                                : "unknown");
         }
+        if (config->psy_bias_dg)
+            SVT_INFO("SVT [config]: preset / tune / PSY bias dynamic mini-GOP / max mini-GOP size \t: %d / %s%s / enabled / %d\n",
+                     config->enc_mode,
+                     config->tune == 0       ? "VQ"
+                         : config->tune == 1 ? "PSNR"
+                             : config->tune == 2 ? "SSIM"
+                                 : config->tune == 3 ? "subjective SSIM"
+                                                 : "still picture",
+                    (config->tune == 2 || config->tune == 3 || config->tune == 4) && config->alt_ssim_tuning ? " (alt)" : "",
+                     1 << config->hierarchical_levels);
+        else
+            SVT_INFO("SVT [config]: preset / tune / mini-GOP size / pred struct \t\t\t: %d / %s%s / %d / %s\n",
+                     config->enc_mode,
+                     config->tune == 0       ? "VQ"
+                         : config->tune == 1 ? "PSNR"
+                             : config->tune == 2 ? "SSIM"
+                                 : config->tune == 3 ? "subjective SSIM"
+                                                 : "still picture",
+                    (config->tune == 2 || config->tune == 3 || config->tune == 4) && config->alt_ssim_tuning ? " (alt)" : "",
+                     1 << config->hierarchical_levels,
+                     config->pred_structure == 1       ? "low delay"
+                         : config->pred_structure == 2 ? "random access"
+                                                       : "unknown");
+        if (config->auto_tiling > 0 || config->tile_columns > 0 || config->tile_rows > 0)
+            SVT_INFO("SVT [config]: auto tiling / columns / rows \t\t\t\t\t: %d / %d / %d\n",
+                     config->auto_tiling,
+                     config->tile_columns,
+                     config->tile_rows);
 
         // Rate control
         switch (config->rate_control_mode) {
@@ -3109,7 +3137,6 @@ EB_API EbErrorType svt_av1_enc_parse_parameter(EbSvtAv1EncConfiguration *config_
         {"psy-bias-mds0-intra-inter-mode-bias", &config_struct->psy_bias_mds0_intra_inter_mode_bias},
         {"psy-bias-inter-mode-bias", &config_struct->psy_bias_inter_mode_bias},
         {"psy-bias-qm-bias", &config_struct->psy_bias_qm_bias},
-	    {"psy-bias-dg", &config_struct->psy_bias_dg},
         {"dlf-bias", &config_struct->dlf_bias},
         {"dlf-sharpness", &config_struct->dlf_sharpness},
         {"cdef-bias", &config_struct->cdef_bias},
@@ -3218,6 +3245,7 @@ EB_API EbErrorType svt_av1_enc_parse_parameter(EbSvtAv1EncConfiguration *config_
     } int8_opts[] = {
         {"preset", &config_struct->enc_mode},
         {"sharpness", &config_struct->sharpness},
+        {"psy-bias-dg", &config_struct->psy_bias_dg},
         {"balancing-r0-dampening-layer", &config_struct->balancing_r0_dampening_layer},
         {"psy-bias-coeff-lvl-offset", &config_struct->psy_bias_coeff_lvl_offset},
         {"psy-bias-optimize-b", &config_struct->psy_bias_optimize_b},
