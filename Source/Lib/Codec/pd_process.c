@@ -914,9 +914,17 @@ static void initialize_mini_gop_activity_array(SequenceControlSet* scs, PictureP
 
         if (scs->enable_dg && scs->static_config.psy_bias_dg) {
         psy_bias_dg(enc_ctx, ctx);
-        fprintf(stderr, "\n%03u / E / ", enc_ctx->intra_period_position);
-        for (uint8_t i = 0; i <= enc_ctx->pre_assignment_buffer_count - 1; i++)
-            fprintf(stderr, "%4llu ", ((PictureParentControlSet *)enc_ctx->pre_assignment_buffer[i]->object_ptr)->balancing_mg_dist);
+        if (scs->static_config.psy_bias_dg == -2) {
+            if (ctx->prev_delayed_intra && ctx->prev_delayed_intra->picture_number == 0) {
+                fprintf(stderr, "\nSvt[info]: -------------------------------------------");
+                fprintf(stderr, "\nSvt[info]: psy-bias-dg has been set to print mode");
+                fprintf(stderr, "\nSvt[info]: It will now print the dist for each Mini-GOP here");
+                fprintf(stderr, "\nSvt[info]: -------------------------------------------");
+            }
+            fprintf(stderr, "\nSvt[info]: Mini-GOP dist / Mini-GOP %3u / ", enc_ctx->intra_period_position);
+            for (uint8_t i = 0; i <= enc_ctx->pre_assignment_buffer_count - 1; i++)
+                fprintf(stderr, "%4llu ", ((PictureParentControlSet *)enc_ctx->pre_assignment_buffer[i]->object_ptr)->balancing_mg_dist);
+        }
     }
     // 6L vs. 5L
     else if (scs->enable_dg && ctx->mini_gop_activity_array[L6_INDEX] == FALSE)
