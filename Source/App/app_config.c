@@ -1495,7 +1495,7 @@ ConfigEntry config_entry_psy[] = {
      set_cfg_generic_token},
     {SINGLE_INPUT,
      PSY_BIAS_DG_TOKEN,
-     "[PSY] Psy Bias Dynamic GoP. [0-1]",
+     "[PSY] Psy Bias Dynamic GoP. [-2,0-1]",
      set_cfg_generic_token},
     {SINGLE_INPUT,
      HIGH_QUALITY_ENCODE_PSY_BIAS,
