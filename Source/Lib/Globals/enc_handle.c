@@ -3986,8 +3986,8 @@ static void set_param_based_on_input(SequenceControlSet *scs)
     //     if (scs->static_config.lineart_psy_bias >= 5.0)
     //         scs->static_config.startup_mg_size = CLIP3(2, 4, scs->static_config.hierarchical_levels - 1);
     // }
-    if (scs->static_config.psy_bias_dg == UINT8_DEFAULT) {
-        if (scs->static_config.lineart_psy_bias >= 3.0 || scs->static_config.texture_psy_bias >= 3.0)
+    if (scs->static_config.psy_bias_dg == INT8_DEFAULT) {
+        if (scs->static_config.lineart_psy_bias >= 2.0 || scs->static_config.texture_psy_bias >= 2.0)
             scs->static_config.psy_bias_dg = 1;
         else
             scs->static_config.psy_bias_dg = 0;
